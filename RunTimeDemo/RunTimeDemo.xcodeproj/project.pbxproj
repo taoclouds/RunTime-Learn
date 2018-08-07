@@ -17,6 +17,7 @@
 		3E513DB62118220A0060BF7B /* RunTimeDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E513DB52118220A0060BF7B /* RunTimeDemoUITests.m */; };
 		3EEEAEE321194B8500142ECB /* RTFirstDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EEEAEE221194B8500142ECB /* RTFirstDemo.m */; };
 		3EEEAEE621199A5C00142ECB /* RTMethodDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EEEAEE521199A5C00142ECB /* RTMethodDemo.m */; };
+		3EEEAEE92119A5E500142ECB /* UIViewController+Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EEEAEE82119A5E500142ECB /* UIViewController+Log.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,8 @@
 		3EEEAEE221194B8500142ECB /* RTFirstDemo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTFirstDemo.m; sourceTree = "<group>"; };
 		3EEEAEE421199A5C00142ECB /* RTMethodDemo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTMethodDemo.h; sourceTree = "<group>"; };
 		3EEEAEE521199A5C00142ECB /* RTMethodDemo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTMethodDemo.m; sourceTree = "<group>"; };
+		3EEEAEE72119A5E500142ECB /* UIViewController+Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Log.h"; sourceTree = "<group>"; };
+		3EEEAEE82119A5E500142ECB /* UIViewController+Log.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Log.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +114,8 @@
 				3E513D92211822080060BF7B /* AppDelegate.m */,
 				3E513D94211822080060BF7B /* MainViewController.h */,
 				3E513D95211822080060BF7B /* MainViewController.m */,
+				3EEEAEE72119A5E500142ECB /* UIViewController+Log.h */,
+				3EEEAEE82119A5E500142ECB /* UIViewController+Log.m */,
 				3EEEAEE121194B8500142ECB /* RTFirstDemo.h */,
 				3EEEAEE221194B8500142ECB /* RTFirstDemo.m */,
 				3EEEAEE421199A5C00142ECB /* RTMethodDemo.h */,
@@ -273,6 +278,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3E513D96211822080060BF7B /* MainViewController.m in Sources */,
+				3EEEAEE92119A5E500142ECB /* UIViewController+Log.m in Sources */,
 				3E513DA1211822090060BF7B /* main.m in Sources */,
 				3E513D93211822080060BF7B /* AppDelegate.m in Sources */,
 				3EEEAEE621199A5C00142ECB /* RTMethodDemo.m in Sources */,
