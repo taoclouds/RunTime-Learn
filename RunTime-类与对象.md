@@ -3,16 +3,20 @@
 ## RunTime 机制
 OC 是一门动态语言，将一些原本在编译和链接阶段要做的任务推迟到了运行时。因此，我们可以利用这个特性实现一些特殊的功能。
 为了实现这个动态的机制，OC 有一个 RunTime 库，用于支持这种运行机制。这个 RunTime 库是基于 C语言的，正是由于 RunTime 库，它赋予了 C 面向对象的能力。
+
 RunTime 将类和对象使用结构体封装起来，而向对象和类发送的消息是用 C 函数来实现。
 当向类/对象发送一条消息时，RunTime 决定了该怎样响应这条消息。
 
 ## 类与对象的基础结构
 ### 类（Class）与对象
 在 `Objective-C` 中，类是由 Class 类型来表示的，它是一个指向 `objc_class` 的指针。这点在objc.h 文件中可以看到：
+
 ```
 typedef struct objc_class *Class;
 ```
+
 而 `objc_class` 这个结构体的定义在 `objc/runtime.h` 这个文件里：
+
 ```
 struct objc_class {
     Class _Nonnull isa  OBJC_ISA_AVAILABILITY;
@@ -30,6 +34,7 @@ struct objc_class {
 #endif
 } OBJC2_UNAVAILABLE;
 ```
+
 以下几个字段比较重要：
 * `super_class` 指向该类的父类，如果该类是顶层的类，则指向 null。
 * `isa` 也是指向一个`Class`，在 OC 中，类本身也是一个对象，这个特殊的对象里有一个 `isa` 指针，指向`metaClass`。
@@ -39,6 +44,7 @@ struct objc_class {
 * `protocols` 类的遵循的协议接口
 
 当我们在向一个 Objective-C 对象发送消息时，RunTime 库会根据实例对象的 isa 指针找到这个实例对象所属的类，RunTime 会在类的方法列表以及父类的方法列表中去查找可以响应消息的方法。
+
 在创建一个特定的实例对象时，分配的内存是一个 objc_object 数据结构，然后是类的实例变量。NSObject类的`alloc`和`allocWithZone:`方法使用函数`class_createInstance`来创建`objc_object`数据结构。
 
 #### Meta class
@@ -48,12 +54,14 @@ struct objc_class {
 ** 而向一个类发送消息时，则会在这个类的 `metaClass`(`isa`指针的指向)的方法列表中查找。**
 
 `metaClass` 存储着一个类的所有类方法，每个类都有一个单独的`metaClass`。但是 `metaClass` 也是一个 `Class` 类型，那它的 `isa` 指针应该指向哪里呢？`metaClass`的 `isa` 指针指向当前类的基类的`metaClass`，而基类的 `metaClass`则指向它自己。
-![一个简单的 Class 指向]()
+![一个简单的 Class 指向](https://github.com/taoclouds/RunTime-Learn/blob/master/image/class_isa.png?raw=true)
 
 ## 类与对象操作函数
 runtime提供了大量的函数来操作类与对象。类的操作方法大部分是以`class_`为前缀的，而对象的操作方法大部分是以`objc_`或`object_`为前缀。下面根据这些方法的用途来分类讨论这些方法的使用。
+
 ### 操作类
 下面是操作类相关的函数
+
 ```
 // 获取类的类名 返回字符串
 const char * class_getName ( Class cls );
@@ -62,9 +70,13 @@ Class class_getSuperclass ( Class cls );
 // 判断给定的Class是否是一个元类， 是返回 yes,否返回 No
 BOOL class_isMetaClass ( Class cls );
 ```
+
 ### 操作类的实例变量，成员变量与属性
+
 在`objc_class`中，所有的成员变量、属性的信息是放在链表`ivars`中的。`ivars`是一个数组，数组中每个元素是指向`Ivar`(变量信息)的指针。runtime提供了丰富的函数来操作这一字段。下面是相关的一些函数:
+
 操作成员变量的：
+
 ```
 // 获取实例大小
 size_t class_getInstanceSize ( Class cls );
@@ -78,6 +90,7 @@ BOOL class_addIvar ( Class cls, const char *name, size_t size, uint8_t alignment
 Ivar * class_copyIvarList ( Class cls, unsigned int *outCount );
 
 ```
+
 * `class_getInstanceVariable`函数，根据传入的 `Class` 和成员变量名称，返回该成员变量信息的`objc_ivar`结构体的指针(`Ivar`类型)。
 
 * `class_getClassVariable`函数，一般认为Objective-C不支持类变量。注意，返回的列表不包含父类的成员变量和属性。
@@ -87,6 +100,7 @@ Ivar * class_copyIvarList ( Class cls, unsigned int *outCount );
 * `class_copyIvarList`函数，它返回一个指向成员变量信息的数组，数组中每个元素是指向该成员变量信息的`objc_ivar`结构体的指针。这个数组不包含在父类中声明的变量。`outCount`指针返回数组的大小。需要注意的是，我们必须使用`free()`来释放这个数组。
 
 属性操作函数：
+
 ```
 // 获取指定的属性
 objc_property_t class_getProperty ( Class cls, const char *name );
@@ -100,6 +114,7 @@ void class_replaceProperty ( Class cls, const char *name, const objc_property_at
 
 ### 操作方法的函数
 操作方法的函数如下：
+
 ```
 // 添加方法
 BOOL class_addMethod ( Class cls, SEL name, IMP imp, const char *types );
@@ -117,7 +132,9 @@ IMP class_getMethodImplementation_stret ( Class cls, SEL name );
 // 类实例是否响应指定的selector
 BOOL class_respondsToSelector ( Class cls, SEL sel );
 ```
+
 * `class_addMethod`的实现会覆盖父类的方法实现，但不会取代本类中已存在的实现，如果本类中包含一个同名的实现，则函数会返回NO。如果要修改已存在实现，可以使用`method_setImplementation`。一个Objective-C方法是一个简单的C函数，它至少包含两个参数`–self`和`_cmd`。所以，我们的实现函数(IMP参数指向的函数)至少需要两个参数，如下所示：
+
 ```
 void myMethodIMP(id self, SEL _cmd)
 {
@@ -125,13 +142,18 @@ void myMethodIMP(id self, SEL _cmd)
 }
 ```
 * `class_getInstanceMethod`、`class_getClassMethod`函数，与`class_copyMethodList`不同的是，这两个函数都会去搜索父类的实现。
+
 * `class_copyMethodList`函数，返回包含所有实例方法的数组，如果需要获取类方法，则可以使用`class_copyMethodList(object_getClass(cls), &count)`(一个类的实例方法是定义在元类里面)。该列表不包含父类实现的方法。`outCount`参数返回方法的个数。在获取到列表后，我们需要使用`free()`方法来释放它。
+
 * `class_replaceMethod`函数，该函数的行为可以分为两种：如果类中不存在name指定的方法，则类似于class_addMethod函数一样会添加方法；如果类中已存在name指定的方法，则类似于`method_setImplementation`一样替代原方法的实现。
+
 * `class_getMethodImplementation`函数，该函数在向类实例发送消息时会被调用，并返回一个指向方法实现函数的指针。这个函数会比`method_getImplementation(class_getInstanceMethod(cls, name))`更快。返回的函数指针可能是一个指向runtime内部的函数，而不一定是方法的实际实现。例如，如果类实例无法响应selector，则返回的函数指针将是运行时消息转发机制的一部分。
+
 * `class_respondsToSelector`函数，判断某个 `class` 是否响应某个方法。我们通常使用NSObject类的`respondsToSelector:`或`instancesRespondToSelector:`方法来达到相同目的。
 
 ### 操作协议的方法
 操作协议的函数如下：
+
 ```
 // 添加协议
 BOOL class_addProtocol ( Class cls, Protocol *protocol );
@@ -140,10 +162,11 @@ BOOL class_conformsToProtocol ( Class cls, Protocol *protocol );
 // 返回类实现的协议列表
 Protocol * class_copyProtocolList ( Class cls, unsigned int *outCount );
 ```
+
 操作协议的方法很清晰，不过多解释。
 
 ### RunTime 实例演示
-[Demo实例在 GitHub]()
+[Demo实例在 GitHub](https://github.com/taoclouds/RunTime-Learn)
 
 ## 动态创建类与对象
 RunTime机制可以实现动态运行时创建类与对象：
