@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface RTFirstDemo : NSObject <NSCopying>
 
@@ -17,5 +18,11 @@
 - (void)secondMethod;
 
 + (void)classMethod;
+
+@end
+
+@interface UITableViewCell (Category)
+
+@property (nonatomic, strong) NSIndexPath *currentIndexPath;
 
 @end
