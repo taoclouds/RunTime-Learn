@@ -9,6 +9,7 @@
 #import "MainViewController.h"
 #import <objc/runtime.h>
 #import "RTFirstDemo.h"
+#import "RTMethodDemo.h"
 
 @interface MainViewController ()
 
@@ -101,7 +102,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self testRunTimeDemo];
+//    [self testRunTimeDemo];
+    RTMethodDemo *methodDemo = [[RTMethodDemo alloc] init];
+    
+    //methodDemo 并不能响应 firstMethod.使用 RunTime 的消息转发使它可以响应
+    [methodDemo performSelector:@selector(firstMethod)];
 }
 
 
